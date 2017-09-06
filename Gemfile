@@ -11,5 +11,5 @@ group :development, :test do
   gem 'vcr',                '~>3.0'
 end
 
-gem 'ms_rest_azure', '0.8.2'
+gem 'ms_rest_azure', '~>0.8.3'
 gem 'azure_mgmt_resources', '~>0.11.0'

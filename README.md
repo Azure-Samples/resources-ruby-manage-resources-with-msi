@@ -77,7 +77,7 @@ port = ENV['MSI_PORT'] || 50342 # If not provided then we assume the default por
 ```
 ```ruby
 # Create Managed Service Identity as the token provider
-provider = MsRestAzure::MSITokenProvider.new(tenant_id, port)
+provider = MsRestAzure::MSITokenProvider.new(port)
 credentials = MsRest::TokenCredentials.new(provider)
 ```
 
