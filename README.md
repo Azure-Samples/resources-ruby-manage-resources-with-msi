@@ -49,7 +49,7 @@ This sample demonstrates how to manage Azure resources via Managed Service Ident
     bundle install
     ```
 
-6. Set the following environment variables using the information from the service principle that you created.
+6. Set the following environment variables.
 
     ```
     export AZURE_TENANT_ID={your tenant id}
