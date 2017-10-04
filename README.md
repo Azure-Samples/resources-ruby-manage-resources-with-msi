@@ -12,7 +12,7 @@ This sample demonstrates how to manage Azure resources via Managed Service Ident
 
 - [Create an Azure VM with MSI extension](#pre-requisite)
 - [Run this sample](#run)
-- [What is example.rb doing?](#example)
+- [What does example.rb do?](#example)
     - [Create an MSI Token Provider](#msi)
     - [Create a resource client](#resource-client)
     - [Create an Azure Vault](#create-vault)
@@ -66,10 +66,13 @@ This sample demonstrates how to manage Azure resources via Managed Service Ident
     ```
 
 <a id="example"></a>
-## What does example.rb doing?
+## What does example.rb do?
+
 <a id="msi"></a>
 ### Create an MSI Token Provider
+
 Initialize `subscription_id`, `tenant_id`, `resource_group_name` and `port` from environment variables.
+
 ```ruby
 subscription_id = ENV['AZURE_SUBSCRIPTION_ID'] || '11111111-1111-1111-1111-111111111111'
 tenant_id = ENV['AZURE_TENANT_ID']
@@ -77,7 +80,8 @@ resource_group_name = ENV['RESOURCE_GROUP_NAME']
 port = ENV['MSI_PORT'] || 50342 # If not provided then we assume the default port
 ```
 
-Now, we will create token credential using `MSITokenProvider`. 
+Now, we will create token credential using `MSITokenProvider`.
+
 ```ruby
 # Create Managed Service Identity as the token provider
 provider = MsRestAzure::MSITokenProvider.new(port)
@@ -92,6 +96,7 @@ Now, we will create a resource management client using Managed Service Identity 
 client = Azure::ARM::Resources::ResourceManagementClient.new(credentials)
 client.subscription_id = subscription_id
 ```
+
 <a id="create-vault"></a>
 ### Create an Azure Vault
 Now, we will create an Azure key vault account using MSI authenticated resource client. This Azure Key Vault
