@@ -13,7 +13,8 @@ This sample demonstrates how to manage Azure resources via Managed Service Ident
 - [Create an Azure VM with MSI extension](#pre-requisite)
 - [Run this sample](#run)
 - [What does example.rb do?](#example)
-    - [Create an MSI Token Provider](#msi)
+    - [Create a System Assigned MSI Token Provider](#msi-sa)
+    - [Create a User Assigned MSI Token Provider](#msi-ua)
     - [Create a resource client](#resource-client)
     - [Create an Azure Vault](#create-vault)
     - [Delete an Azure vault](#delete-vault)
@@ -68,9 +69,6 @@ This sample demonstrates how to manage Azure resources via Managed Service Ident
 <a id="example"></a>
 ## What does example.rb do?
 
-<a id="msi"></a>
-### Create an MSI Token Provider
-
 Initialize `subscription_id`, `tenant_id`, `resource_group_name` and `port` from environment variables.
 
 ```ruby
@@ -80,11 +78,45 @@ resource_group_name = ENV['RESOURCE_GROUP_NAME']
 port = ENV['MSI_PORT'] || 50342 # If not provided then we assume the default port
 ```
 
-Now, we will create token credential using `MSITokenProvider`.
+<a id="msi-sa"></a>
+### Create a System Assigned MSI Token Provider
+
+We can create token credential using `MSITokenProvider` with System Assigned Identity:
 
 ```ruby
-# Create Managed Service Identity as the token provider
-provider = MsRestAzure::MSITokenProvider.new(port)
+# Create System Assigned MSI token provider
+provider = MsRestAzure::MSITokenProvider.new
+```
+
+<a id="msi-ua"></a>
+### Create a User Assigned MSI Token Provider
+To create a User Assigned Identity, you would need to provide a reference to your User Assigned object in order to create an instance. You can provide a
+`client_id`, an `object_id` (Active Directory IDs) or the MSI resource id that must conform to:
+ `/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg/providers/Microsoft.ManagedIdentity/userAssignedIdentities/msiname`
+
+The fastest way to get a `client_id` is to use the CLI 2.0: `az identity show -g myR -n myMSi`
+
+You can get the `object_id` using the `az ad sp show --id <client_id>` command, or througth the Azure Portal in the Active Directory section.
+
+You can also use the `azure_mgmt_msi` package.
+
+```ruby
+    # Create User Assigned MSI token provider using client_id
+    provider = MsRestAzure::MSITokenProvider.new(port, settings,  {:client_id => '00000000-0000-0000-0000-000000000000' })
+```
+or `object_id`:
+```ruby
+    # Create User Assigned MSI token provider using object_id
+    provider = MsRestAzure::MSITokenProvider.new(port, settings,  {:object_id => '00000000-0000-0000-0000-000000000000' })
+ ```
+or `msi_res_id`:
+ ```ruby
+     # Create User Assigned MSI token provider using msi_res_id
+     provider = MsRestAzure::MSITokenProvider.new(port, settings,  {:msi_res_id => '/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg/providers/Microsoft.ManagedIdentity/userAssignedIdentities/msiname'})
+ ```
+
+Then, obtain credentials with the obtained provider:
+```ruby
 credentials = MsRest::TokenCredentials.new(provider)
 ```
 

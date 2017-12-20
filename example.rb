@@ -5,7 +5,7 @@ require 'dotenv'
 
 Dotenv.load!(File.join(__dir__, './.env'))
 
-WEST_US = 'westus'
+LOCATION = 'westcentralus'
 KEY_VAULT_NAME = 'sampleVault8976'
 
 # This script expects that the following environment vars are set:
@@ -22,20 +22,36 @@ def run_example
   subscription_id = ENV['AZURE_SUBSCRIPTION_ID'] || '11111111-1111-1111-1111-111111111111' # your Azure Subscription Id
   tenant_id = ENV['AZURE_TENANT_ID']
   resource_group_name = ENV['RESOURCE_GROUP_NAME']
-  port = ENV['MSI_PORT'] || 50342 # If not provided then we assume the default port
 
-  # Create Managed Service Identity as the token provider
-  provider = MsRestAzure::MSITokenProvider.new(port)
+  port = ENV['MSI_PORT'] || 50342 # If not provided then we assume the default port
+  settings = MsRestAzure::ActiveDirectoryServiceSettings.get_azure_settings
+
+  # Create System Assigned MSI token provider
+  provider = MsRestAzure::MSITokenProvider.new
+
+  # The below code shows options to create MSI token provider for User Assigned identity.
+  # Please uncomment the desired line to run this sample and obtain the appropriate token provider.
+  #
+  # # Create User Assigned MSI token provider using client_id
+  # provider = MsRestAzure::MSITokenProvider.new(port, settings,  {:client_id => '00000000-0000-0000-0000-000000000000' })
+  #
+  # # Create User Assigned MSI token provider using object_id
+  # provider = MsRestAzure::MSITokenProvider.new(port, settings,  {:object_id => '00000000-0000-0000-0000-000000000000' })
+  #
+  # # Create User Assigned MSI token provider using msi_res_id
+  # provider = MsRestAzure::MSITokenProvider.new(port, settings,  {:msi_res_id => '/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg/providers/Microsoft.ManagedIdentity/userAssignedIdentities/msiname'})
+
+
   credentials = MsRest::TokenCredentials.new(provider)
 
   # Create a resource client
-  client = Azure::ARM::Resources::ResourceManagementClient.new(credentials)
+  client = Azure::Resources::Mgmt::V2017_05_10::ResourceManagementClient.new(credentials)
   client.subscription_id = subscription_id
 
   # Create a Key Vault in the Resource Group
   puts 'Creating key vault account with MSI Identity...'
-  key_vault_params = Azure::ARM::Resources::Models::GenericResource.new.tap do |rg|
-    rg.location = WEST_US
+  key_vault_params = Azure::Resources::Mgmt::V2017_05_10::Models::GenericResource.new.tap do |rg|
+    rg.location = LOCATION
     rg.properties = {
         sku: { family: 'A', name: 'standard' },
         tenantId: tenant_id,
