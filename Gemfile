@@ -9,4 +9,7 @@ group :development, :test do
   gem 'dotenv',             '~>2.1'
 end
 
-gem 'azure_mgmt_resources', '~>0.12.0'
+gem 'azure_mgmt_resources', '~>0.15.2'
+
+# gem 'azure_mgmt_resources', path: "F:/Git/azure-sdk-for-ruby/management/azure_mgmt_resources" # '~>0.12.0'
+# gem 'ms_rest_azure', path: 'F:/Git/azure-sdk-for-ruby/runtime/ms_rest_azure'
