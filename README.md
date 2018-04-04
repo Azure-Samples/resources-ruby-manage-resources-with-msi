@@ -60,7 +60,19 @@ This sample demonstrates how to manage Azure resources via Managed Service Ident
 
     > [AZURE.NOTE] On Windows, use `set` instead of `export`.
 
-7. Run the sample.
+7. As of 04/04/2018, there are 2 supported ways to get MSI Token.
+   - Using the extension installed locally and accessing http://localhost:50342/oauth2/token to get the MSI Token
+   - Accessing the http://169.254.169.254/metadata/identity/oauth2/token to get the MSI Token (default)
+
+   Usually, you do not have to worry about the way you get the MSI token. If you would like to access the token specifically using the first approach, then set the environment variable 'MSI_VM' to true as:
+
+   ```
+   export MSI_VM=true
+   ```
+
+   > [AZURE.NOTE] On Windows, use `set` instead of `export`.
+
+8. Run the sample.
 
     ```
     bundle exec ruby example.rb
